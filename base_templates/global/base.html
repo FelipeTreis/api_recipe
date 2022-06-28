@@ -13,7 +13,10 @@
 
     <main class="main-content-container">
         <div class="main-content main-content-list container">
-            {% block content %}{% endblock content %}
+            {% block content %}{% endblock content %}  
+        </div>
+        <div class="container">
+            {% include 'recipes/partials/pagination.html' %}
         </div>
     </main>
 
