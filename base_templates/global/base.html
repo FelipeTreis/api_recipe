@@ -12,20 +12,9 @@
     {% include 'recipes/partials/search.html' %}
 
     <main class="main-content-container">
-        
-        {% if messages %}
-        <div class="main-content container center">
-            {% for message in messages %}
-                {{ message }}
-            {% endfor %}
-        </div>
-        {% endif %}
-
-        <div class="main-content main-content-list container">
-            {% block content %}{% endblock content %}  
-        </div>
 
         <div class="main-content container">
+            {% block content %}{% endblock content %}  
             {% include 'recipes/partials/pagination.html' %}
         </div>
 
