@@ -124,7 +124,7 @@ class AuthorRegisterFormIntegrationTest(DjangoTestCase):
 
     def test_password_and_password_confirmation_are_equal(self):
         self.form_data['password'] = '@ABC123@abc123'
-        self.form_data['password'] = '@ABC123@abc1234'
+        self.form_data['password2'] = '@ABC123@abc1234'
 
         url = reverse('authors:create')
         response = self.client.post(url, data=self.form_data, follow=True)
@@ -134,12 +134,12 @@ class AuthorRegisterFormIntegrationTest(DjangoTestCase):
         self.assertIn(msg, response.content.decode('utf-8'))
 
         self.form_data['password'] = '@ABC123@abc123'
-        self.form_data['password'] = '@ABC123@abc123'
+        self.form_data['password2'] = '@ABC123@abc123'
 
         url = reverse('authors:create')
         response = self.client.post(url, data=self.form_data, follow=True)
 
-        self.assertIn(msg, response.content.decode('utf-8'))
+        self.assertNotIn(msg, response.content.decode('utf-8'))
 
     def test_send_get_request_to_registration_create_view_returns_404(self):
         url = reverse('authors:create')
