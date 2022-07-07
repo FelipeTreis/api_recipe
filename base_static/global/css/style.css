@@ -353,6 +353,19 @@ h6 {
   transform: scale(1.005);
 }
 
+.inline-form {
+  display: inline;
+}
+
+.plaintext-button {
+  font-size: 1.6rem;
+  display: inline;
+  border: none;
+  background: none;
+  cursor: pointer;
+  color: var(--color-primary);
+}
+
 /* Messages */
 
 .messages-container {
