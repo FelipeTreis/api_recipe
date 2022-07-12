@@ -59,6 +59,20 @@ body {
   background-color: var(--color-gray-1);
 }
 
+img {
+  max-width: 100%;
+}
+
+a {
+  color: var(--color-primary);
+  text-decoration: none;
+}
+
+a:hover {
+  color: var(--color-primary-hover);
+  transition: all 300ms ease-in-out;
+}
+
 h1,
 h2,
 h3,
@@ -327,7 +341,7 @@ h6 {
   color: var(--color-error-dark);
 }
 
-.form-content input {
+.form-content input, textarea, select {
   width: 100%;
   padding: 1rem;
   border-radius: .4rem;
@@ -355,6 +369,10 @@ h6 {
 
 .inline-form {
   display: inline;
+}
+
+.span-2 {
+  grid-column: span 2;
 }
 
 .plaintext-button {
@@ -453,6 +471,10 @@ h6 {
 
 .center {
   text-align: center;
+}
+
+.left {
+  text-align: left;
 }
 
 @media (max-width: 600px) {
