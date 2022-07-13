@@ -31,7 +31,7 @@ def register_create(request):
     if form.is_valid():
         user = form.save(commit=False)
         user.set_password(user.password)
-        user.save()
+        form.save()
         messages.success(request, 'Your user is created, please log in.')
 
         del(request.session['register_form_data'])
@@ -107,7 +107,20 @@ def dashboard_recipe_edit(request, id):
     if not recipe:
         raise Http404()
 
-    form = AuthorRecipeForm(data=request.POST or None, instance=recipe)
+    form = AuthorRecipeForm(data=request.POST or None,
+                            files=request.FILES or None, instance=recipe)
+
+    if form.is_valid():
+        recipe = form.save(commit=False)
+
+        recipe.author = request.user
+        recipe.preparation_steps_is_html = False
+        recipe.is_published = False
+
+        form.save()
+
+        messages.success(request, 'Your recipe has been saved successfully!')
+        return redirect(reverse('authors:dashboard_recipe_edit', args=(id,)))
 
     return render(request, 'authors/pages/dashboard_recipe.html',
                   context={'form': form})
