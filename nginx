@@ -1,0 +1,162 @@
+###############################################################################
+# Replace
+# recipe to the name of the gunicorn file you want
+# felipetreis1 to your user name
+# app_repo to the folder name of your project
+# project to the folder name where you find a file called wsgi.py
+#
+###############################################################################
+# Criando o arquivo recipe.socket
+sudo nano /etc/systemd/system/recipe.socket
+
+###############################################################################
+# Conteúdo do arquivo
+[Unit]
+Description=gunicorn blog socket
+
+[Socket]
+ListenStream=/run/recipe.socket
+
+[Install]
+WantedBy=sockets.target
+
+###############################################################################
+# Criando o arquivo recipe.service
+sudo nano /etc/systemd/system/recipe.service
+
+###############################################################################
+# Conteúdo do arquivo
+[Unit]
+Description=Gunicorn daemon (You can change if you want)
+Requires=recipe.socket
+After=network.target
+
+[Service]
+User=felipetreis1
+Group=www-data
+Restart=on-failure
+EnvironmentFile=/home/felipetreis1/app_repo/.env
+WorkingDirectory=/home/felipetreis1/app_repo
+# --error-logfile --enable-stdio-inheritance --log-level and --capture-output
+# are all for debugging purposes.
+ExecStart=/home/felipetreis1/app_repo/.venv/bin/gunicorn \
+          --error-logfile /home/felipetreis1/app_repo/gunicorn-error-log \
+          --enable-stdio-inheritance \
+          --log-level "debug" \
+          --capture-output \
+          --access-logfile - \
+          --workers 6 \
+          --bind unix:/run/recipe.socket \
+          project.wsgi:application
+
+[Install]
+WantedBy=multi-user.target
+
+###############################################################################
+# Ativando
+sudo systemctl start recipe.socket
+sudo systemctl enable recipe.socket
+
+# Checando
+sudo systemctl status recipe.socket
+curl --unix-socket /run/recipe.socket localhost
+sudo systemctl status recipe
+
+# Restarting
+sudo systemctl restart recipe.service
+sudo systemctl restart recipe.socket
+sudo systemctl restart recipe
+
+# After changing something
+sudo systemctl daemon-reload
+
+# Debugging
+sudo journalctl -u recipe.service
+sudo journalctl -u recipe.socket
+
+#########################
+#                       #
+#########################
+
+
+# https://www.nginx.com/blog/using-free-ssltls-certificates-from-lets-encrypt-with-nginx/
+#
+# REPLACES
+# 34.125.204.218 = Replace with your domain
+# /home/felipetreis1/app_repo = Replace with the path to the folder for the project
+# /home/felipetreis1/app_repo/static = Replace with the path to the folder for static files
+# /home/felipetreis1/app_repo/media = Replace with the path to the folder for media files
+# recipe.socket = Replace with your unix socket name
+# 
+# Set timezone
+# List - timedatectl list-timezones
+# sudo timedatectl set-timezone America/Sao_Paulo
+#
+# HTTP
+server {
+  listen 80;
+  listen [::]:80;
+  server_name 34.125.204.218;
+
+  # Add index.php to the list if you are using PHP
+  index index.html index.htm index.nginx-debian.html index.php;
+  
+  # ATTENTION: /home/felipetreis1/app_repo/static
+  location /static {
+    autoindex on;
+    alias /home/felipetreis1/app_repo/static;
+  }
+
+  # ATTENTION: /home/felipetreis1/app_repo/media 
+  location /media {
+    autoindex on;
+    alias /home/felipetreis1/app_repo/media;
+  }
+
+  # ATTENTION: recipe.socket
+  location / {
+    proxy_pass http://unix:/run/recipe.socket;
+    proxy_http_version 1.1;
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_set_header Connection 'upgrade';
+    proxy_set_header Host $host;
+    proxy_cache_bypass $http_upgrade;
+  }
+
+  # deny access to .htaccess files, if Apache's document root
+  # concurs with nginx's one
+  #
+  location ~ /\.ht {
+    deny all;
+  }
+
+  location ~ /\. {
+    access_log off;
+    log_not_found off;
+    deny all;
+  }
+
+  gzip on;
+  gzip_disable "msie6";
+
+  gzip_comp_level 6;
+  gzip_min_length 1100;
+  gzip_buffers 4 32k;
+  gzip_proxied any;
+  gzip_types
+    text/plain
+    text/css
+    text/js
+    text/xml
+    text/javascript
+    application/javascript
+    application/x-javascript
+    application/json
+    application/xml
+    application/rss+xml
+    image/svg+xml;
+
+  access_log off;
+  #access_log  /var/log/nginx/34.125.204.218-access.log;
+  error_log   /var/log/nginx/34.125.204.218-error.log;
+}
