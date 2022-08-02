@@ -5,10 +5,9 @@ from django.forms.models import model_to_dict
 from django.http import Http404, JsonResponse
 from django.shortcuts import render
 from django.views.generic import DetailView, ListView
+from recipes.models import Recipe
 from tag.models import Tag
 from utils.pagination import make_pagination
-
-from recipes.models import Recipe
 
 PER_PAGE = int(os.environ.get('PER_PAGE', 3))
 
