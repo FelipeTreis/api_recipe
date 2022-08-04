@@ -1,3 +1,4 @@
+from authors.forms.validators import AuthorRecipeValidadtor
 from rest_framework import serializers
 from tag.models import Tag
 
@@ -14,10 +15,11 @@ class RecipeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Recipe
         fields = (
-            'id', 'title', 'description',
-            'author', 'category', 'tags',
-            'public', 'preparation',
-            'tags_objects', 'tag_link',
+            'id', 'title', 'description', 'author',
+            'category', 'tags', 'public', 'preparation',
+            'tags_objects', 'tag_link', 'preparation_time',
+            'preparation_time_unit', 'servings',
+            'servings_unit', 'preparation_steps', 'cover'
         )
 
     public = serializers.BooleanField(
@@ -37,3 +39,9 @@ class RecipeSerializer(serializers.ModelSerializer):
 
     def get_preparation(self, recipe):
         return f'{recipe.preparation_time} {recipe.preparation_time_unit}'
+
+    def validate(self, attrs):
+        super_validate = super().validate(attrs)
+        AuthorRecipeValidadtor(
+            data=attrs, ErrorClass=serializers.ValidationError,)
+        return super_validate
