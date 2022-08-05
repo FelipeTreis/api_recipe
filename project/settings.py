@@ -152,6 +152,14 @@ MESSAGE_TAGS = {
 }
 
 # Django Toolbar
+
 INTERNAL_IPS = [
     '127.0.0.1',
 ]
+
+# Pagination Rest_Framework
+
+REST_FRAMEWORK = {
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',  # noqa: E501
+    'PAGE_SIZE': 10,
+}
