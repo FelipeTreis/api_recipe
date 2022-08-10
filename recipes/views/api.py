@@ -2,10 +2,9 @@ from django.shortcuts import get_object_or_404
 from recipes.models import Recipe
 from recipes.serializers import RecipeSerializer, TagSerializer
 from rest_framework.decorators import api_view
-from rest_framework.generics import (ListCreateAPIView,
-                                     RetrieveUpdateDestroyAPIView)
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
+from rest_framework.viewsets import ModelViewSet
 from tag.models import Tag
 
 
@@ -13,13 +12,7 @@ class RecipeAPIv2Pagination(PageNumberPagination):
     page_size = 2
 
 
-class RecipeAPIv2List(ListCreateAPIView):
-    queryset = Recipe.objects.get_published()
-    serializer_class = RecipeSerializer
-    pagination_class = PageNumberPagination
-
-
-class RecipeAPIv2Detail(RetrieveUpdateDestroyAPIView):
+class RecipeAPIv2ViewSet(ModelViewSet):
     queryset = Recipe.objects.get_published()
     serializer_class = RecipeSerializer
     pagination_class = PageNumberPagination
