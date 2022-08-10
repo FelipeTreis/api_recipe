@@ -17,7 +17,7 @@ class RecipeAPIv2ViewSet(ModelViewSet):
     serializer_class = RecipeSerializer
     pagination_class = PageNumberPagination
 
-    def patch(self, request, *args, **kwargs):
+    def partial_update(self, request, *args, **kwargs):
         pk = kwargs.get('pk')
         recipe = self.get_queryset().filter(pk=pk).first()
         serializer = RecipeSerializer(
